@@ -1,5 +1,6 @@
 <script>
-  import { isRowHasNumber } from "./../utility";
+  import { getAsciiCode, getValidatedKey } from "./../utility";
+  import { onMount } from "svelte";
   let values = [
     ["", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", ""],
@@ -11,33 +12,41 @@
     ["", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", ""],
   ];
-
+  let errorArr = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
   let selectedX = 0;
   let selectedY = 0;
-  let errorX = null;
-  let errorY = null;
+
+  onMount(() => {
+    document.querySelector("#sudo00 input").focus();
+  });
 
   const elementSelectHandler = (e) => {
-    console.log("eee", e.target.parentNode);
-
-    selectedX = e.target.parentNode.getAttribute("data-x");
-    selectedY = e.target.parentNode.getAttribute("data-y");
+    selectedX = +e.target.parentNode.getAttribute("data-x");
+    selectedY = +e.target.parentNode.getAttribute("data-y");
   };
 
   const keyDownHandler = (evt) => {
-    console.log("e", evt, selectedX, selectedY);
+    if (getAsciiCode(evt) === 18) return;
+    console.log("e", errorArr);
+    let data = getValidatedKey(evt, selectedX, selectedY, values, errorArr);
 
-    let ASCIICode = evt.which ? evt.which : evt.keyCode;
-    if (ASCIICode === 9) {
-    } else if (ASCIICode < 49 || ASCIICode > 57) {
-      values[selectedX][selectedY] = " ";
-    } else {
-      values[selectedX][selectedY] = +evt.key;
-      if (isRowHasNumber(+evt.key, selectedX, selectedY)) {
-        errorX = selectedX;
-        errorY = selectedX;
-      }
-    }
+    errorArr[selectedX][selectedY] = data.err;
+    selectedX = data.x;
+    selectedY = data.y;
+    document.querySelector(`#sudo${selectedX}${selectedY} input`).focus();
+
+    console.log("res", selectedX, selectedY, data, evt, values, !!data.val);
+    values[selectedX][selectedY] = !!data.val ? Number(data.val) : "";
   };
 </script>
 
@@ -65,6 +74,10 @@
   .sudoku-elem.active {
     border: 0.1em solid var(--primary-color);
     background-color: #fff;
+  }
+  .sudoku-elem.error {
+    border: 0.1em solid #721c24;
+    background-color: #f8d7da;
   }
   .sudoBox11,
   .sudoBox13,
@@ -107,7 +120,8 @@
     {#each Array(9) as _, j}
       <div
         on:click={elementSelectHandler}
-        class={(selectedX == i && selectedY == j ? 'active ' : '') + (errorX == i && errorY == j ? 'error ' : '') + 'sudoku-elem sudo' + i + j + ' sudoBox' + Math.floor((i + 3) / 3) + Math.floor((j + 3) / 3) + ' x' + i + ' y' + j}
+        id={'sudo' + i + j}
+        class={(selectedX === i && selectedY === j ? 'active ' : '') + (errorArr[i][j] === true ? 'error ' : '') + 'sudoku-elem sudo' + i + j + ' sudoBox' + Math.floor((i + 3) / 3) + Math.floor((j + 3) / 3) + ' x' + i + ' y' + j}
         data-x={i}
         data-y={j}
         data-boxX={Math.floor((i + 3) / 3)}
