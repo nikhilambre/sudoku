@@ -37,7 +37,6 @@
 
   const keyDownHandler = (evt) => {
     if (getAsciiCode(evt) === 18) return;
-    console.log("e", errorArr);
     let data = getValidatedKey(evt, selectedX, selectedY, values, errorArr);
 
     errorArr[selectedX][selectedY] = data.err;

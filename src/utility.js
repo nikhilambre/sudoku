@@ -1,29 +1,53 @@
-export const isRowHasNumber = (numb, x, y, values) => {
-    return (lineLoopCheck('x', numb, x, values) || lineLoopCheck('y', numb, y, values));
-}
-
-export const isBoxHasNumber = (numb, x, y, values) => {
+export const isNumberInRows = (numb, xRowNumb, yRowNumb, valueArr) => {
+    for (let i = 0; i < 9; i++) {
+        if (i === yRowNumb) continue;
+        if (valueArr[xRowNumb][i] === numb) {
+            return true;
+        }
+    }
+    for (let i = 0; i < 9; i++) {
+        if (i === xRowNumb) continue;
+        if (valueArr[i][yRowNumb] === numb) {
+            return true;
+        }
+    }
     return false;
 }
 
-export const lineLoopCheck = (type, numb, line, valueArr) => {
+export const isNumberInXRow = (numb, xRowNumb, yRowNumb, valueArr) => {
     for (let i = 0; i < 9; i++) {
-        if (type === 'x') {
-            if (valueArr[line][i] === numb) {
-                return true;
-            }
-        } else {
-            if (valueArr[i][line] === numb) {
+        if (i === yRowNumb) continue;
+        if (valueArr[xRowNumb][i] === numb) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export const isNumberInYRow = (numb, xRowNumb, yRowNumb, valueArr) => {
+    for (let i = 0; i < 9; i++) {
+        if (i === xRowNumb) continue;
+        if (valueArr[i][yRowNumb] === numb) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export const isNumberInBox = (numb, x, y, valueArr) => {
+    let startX = Math.floor(x / 3) * 3;
+    let startY = Math.floor(y / 3) * 3;
+
+    for (let i = startX; i < (startX + 3); i++) {
+        for (let j = startY; j < (startY + 3); j++) {
+            if (i === x && j === y) continue;
+            if (valueArr[i][j] === numb) {
                 return true;
             }
         }
     }
     return false;
 }
-
-// export const boxLoopCheck() {
-
-// }
 
 /**
  * 
@@ -68,7 +92,7 @@ export const getValidatedKey = (evt, X, Y, values, errors) => {
     } else if (nonNumberKey(ASCIICode)) {
         data.val = 1;
     } else {
-        if (isRowHasNumber(+evt.key, X, Y, values) || isBoxHasNumber(+evt.key, X, Y, values)) {
+        if (isNumberInRows(+evt.key, X, Y, values) || isNumberInBox(+evt.key, X, Y, values)) {
             data.x = X;
             data.y = Y;
             data.err = true;
