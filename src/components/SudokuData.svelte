@@ -19,8 +19,8 @@
 
 <div class="sudoku-response">
     <section class="intro">
-        <h2 class="intro-h2" tabindex="0">What is Sudoku Solver</h2>
-        <p class="intro-p" tabindex="0">
+        <h2 class="intro-h2" tabindex="-1">What is Sudoku Solver</h2>
+        <p class="intro-p" tabindex="-1">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
             vel turpis ac dolor pretium ullamcorper non in tortor. Nulla id
             aliquet tortor. Curabitur ac leo egestas magna congue varius sed sed

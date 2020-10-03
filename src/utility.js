@@ -1,3 +1,38 @@
+export const getPossibleValuesArray = (x, y, valueArr) => {
+    let list = [];
+    for (let numb = 1; numb < 10; numb++) {
+        //  Check x number can present at (x,y) by checking presence in vert/hori rows & in box
+        if (!isNumberInBox(numb, x, y, valueArr)) {
+            if (!isNumberInRows(numb, x, y, valueArr)) {
+                list.push(numb);
+            }
+        }
+    }
+    return list;
+}
+
+export const getPossibleValues = (values, possibleValues, iteration = 0) => {
+    let reCheck = false;
+
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (!!values[i][j]) continue;
+            possibleValues[i][j] = [
+                ...possibleValues[i][j],
+                getPossibleValuesArray(i, j, values),
+            ];
+            if (possibleValues[i][j][iteration].length === 1) {
+                reCheck = true;
+                values[i][j] = possibleValues[i][j][iteration][0];
+            }
+        }
+    }
+    if (reCheck) {
+        getPossibleValues(values, possibleValues, iteration++);
+    }
+    return { "possibleValues": possibleValues, "values": values }
+}
+
 export const isNumberInRows = (numb, xRowNumb, yRowNumb, valueArr) => {
     for (let i = 0; i < 9; i++) {
         if (i === yRowNumb) continue;

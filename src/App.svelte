@@ -4,18 +4,29 @@
   import Main from "./components/Main.svelte";
   import Sudoku from "./components/Sudoku.svelte";
   import SudokuData from "./components/SudokuData.svelte";
-  import { getAsciiCode, getValidatedKey } from "./utility";
+  import { getAsciiCode, getValidatedKey, getPossibleValues } from "./utility";
 
   let values = [
+    [7, "", 3, "", "", "", "", "", 6],
+    ["", 1, "", "", "", 9, "", "", ""],
+    ["", 9, 6, 1, "", "", "", 3, ""],
+    [5, "", "", "", "", 7, 9, "", 4],
+    ["", "", "", 8, 1, "", 2, "", ""],
+    ["", "", "", 5, "", "", "", "", ""],
+    ["", "", 2, 4, "", "", "", "", 8],
     ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
+    [3, "", 4, "", "", "", "", 6, ""],
+  ];
+  let possibleValues = [
+    [[], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], []],
+    [[], [], [], [], [], [], [], [], []],
   ];
   let errorArr = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -37,19 +48,26 @@
   };
 
   const keyDownHandler = (evt) => {
+    //  Escape for ALT key
     if (getAsciiCode(evt) === 18) return;
-    let data = getValidatedKey(evt, selectedX, selectedY, values, errorArr);
 
+    //  Validate keys entered
+    let data = getValidatedKey(evt, selectedX, selectedY, values, errorArr);
     errorArr[selectedX][selectedY] = data.err;
     selectedX = data.x;
     selectedY = data.y;
-    document.querySelector(`#sudo${selectedX}${selectedY} input`).focus();
 
+    //  Update values entered
+    document.querySelector(`#sudo${selectedX}${selectedY} input`).focus();
     values[selectedX][selectedY] = !!data.val ? Number(data.val) : "";
   };
 
   const solveSudoku = () => {
-    console.log("start solving sudoku");
+    let data = getPossibleValues(values, possibleValues);
+    values = data.values;
+    possibleValues = data.possibleValues;
+
+    console.log("res", values, possibleValues);
   };
 </script>
 
