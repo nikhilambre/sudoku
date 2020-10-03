@@ -4,7 +4,12 @@
   import Main from "./components/Main.svelte";
   import Sudoku from "./components/Sudoku.svelte";
   import SudokuData from "./components/SudokuData.svelte";
-  import { getAsciiCode, getValidatedKey, getPossibleValues } from "./utility";
+  import {
+    getAsciiCode,
+    getValidatedKey,
+    solveForPossibleValues,
+    isSudokuNotSolved,
+  } from "./utility";
 
   let values = [
     [7, "", 3, "", "", "", "", "", 6],
@@ -51,7 +56,7 @@
     //  Escape for ALT key
     if (getAsciiCode(evt) === 18) return;
 
-    //  Validate keys entered
+    //  Validate key entered
     let data = getValidatedKey(evt, selectedX, selectedY, values, errorArr);
     errorArr[selectedX][selectedY] = data.err;
     selectedX = data.x;
@@ -63,10 +68,14 @@
   };
 
   const solveSudoku = () => {
-    let data = getPossibleValues(values, possibleValues);
+    let data = solveForPossibleValues(values, possibleValues);
     values = data.values;
     possibleValues = data.possibleValues;
 
+    if (isSudokuNotSolved(values)) {
+    } else {
+      console.log("SUDOKU SOLVED!");
+    }
     console.log("res", values, possibleValues);
   };
 </script>

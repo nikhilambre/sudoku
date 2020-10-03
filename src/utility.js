@@ -1,4 +1,35 @@
-export const getPossibleValuesArray = (x, y, valueArr) => {
+export const isSudokuNotSolved = (valueArr) => {
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (valueArr[i][j] === "") {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+export const solveForPossibleValues = (valueArr, possibleValues) => {
+    let reCheck = false;
+
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (!!valueArr[i][j]) continue;
+            possibleValues[i][j] = [...getPossibleValues(i, j, valueArr)];
+            if (possibleValues[i][j].length === 1) {
+                reCheck = true;
+                valueArr[i][j] = possibleValues[i][j][0];
+                possibleValues[i][j] = [];
+            }
+        }
+    }
+    if (reCheck) {
+        solveForPossibleValues(valueArr, possibleValues);
+    }
+    return { "possibleValues": possibleValues, "values": valueArr }
+}
+
+export const getPossibleValues = (x, y, valueArr) => {
     let list = [];
     for (let numb = 1; numb < 10; numb++) {
         //  Check x number can present at (x,y) by checking presence in vert/hori rows & in box
@@ -9,28 +40,6 @@ export const getPossibleValuesArray = (x, y, valueArr) => {
         }
     }
     return list;
-}
-
-export const getPossibleValues = (values, possibleValues, iteration = 0) => {
-    let reCheck = false;
-
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            if (!!values[i][j]) continue;
-            possibleValues[i][j] = [
-                ...possibleValues[i][j],
-                getPossibleValuesArray(i, j, values),
-            ];
-            if (possibleValues[i][j][iteration].length === 1) {
-                reCheck = true;
-                values[i][j] = possibleValues[i][j][iteration][0];
-            }
-        }
-    }
-    if (reCheck) {
-        getPossibleValues(values, possibleValues, iteration++);
-    }
-    return { "possibleValues": possibleValues, "values": values }
 }
 
 export const isNumberInRows = (numb, xRowNumb, yRowNumb, valueArr) => {
