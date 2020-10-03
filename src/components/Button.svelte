@@ -5,13 +5,21 @@
 </script>
 
 <style>
+  .button {
+    color: var(--contrast-text);
+    cursor: pointer;
+    padding: 1em 1.5em;
+    border-radius: 0.3em;
+    border: none;
+    text-transform: uppercase;
+    box-shadow: 0 20px 20px -20px rgba(0, 0, 0, 0.3),
+      0 0 15px rgba(0, 0, 0, 0.2);
+  }
   .primary {
     background-color: var(--primary-color);
-    color: var(--contrast-text);
   }
   .secondary {
     background-color: var(--secondary-color);
-    color: var(--contrast-text);
   }
   .inverse {
     background-color: transparent;
@@ -22,6 +30,6 @@
   }
 </style>
 
-<button class={type} class:flat class:inverse>
+<button tabindex="0" class={'button ' + type} class:flat class:inverse on:click>
   <slot />
 </button>

@@ -1,56 +1,21 @@
 <script>
-  import { getAsciiCode, getValidatedKey } from "./../utility";
   import { onMount } from "svelte";
-  let values = [
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", ""],
-  ];
-  let errorArr = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ];
-  let selectedX = 0;
-  let selectedY = 0;
+
+  export let values;
+  export let errorArr;
+  export let selectedX;
+  export let selectedY;
 
   onMount(() => {
     document.querySelector("#sudo00 input").focus();
   });
-
-  const elementSelectHandler = (e) => {
-    selectedX = +e.target.parentNode.getAttribute("data-x");
-    selectedY = +e.target.parentNode.getAttribute("data-y");
-  };
-
-  const keyDownHandler = (evt) => {
-    if (getAsciiCode(evt) === 18) return;
-    let data = getValidatedKey(evt, selectedX, selectedY, values, errorArr);
-
-    errorArr[selectedX][selectedY] = data.err;
-    selectedX = data.x;
-    selectedY = data.y;
-    document.querySelector(`#sudo${selectedX}${selectedY} input`).focus();
-
-    console.log("res", selectedX, selectedY, data, evt, values, !!data.val);
-    values[selectedX][selectedY] = !!data.val ? Number(data.val) : "";
-  };
 </script>
 
 <style>
   .sudoku-wrap {
+    width: 55%;
+  }
+  .sudoku {
     width: 33em;
     height: 33em;
     padding: 0;
@@ -115,23 +80,25 @@
 </style>
 
 <div class="sudoku-wrap">
-  {#each Array(9) as _, i}
-    {#each Array(9) as _, j}
-      <div
-        on:click={elementSelectHandler}
-        id={'sudo' + i + j}
-        class={(selectedX === i && selectedY === j ? 'active ' : '') + (errorArr[i][j] === true ? 'error ' : '') + 'sudoku-elem sudo' + i + j + ' sudoBox' + Math.floor((i + 3) / 3) + Math.floor((j + 3) / 3) + ' x' + i + ' y' + j}
-        data-x={i}
-        data-y={j}
-        data-boxX={Math.floor((i + 3) / 3)}
-        data-boxY={Math.floor((j + 3) / 3)}
-        data-value={values[i][j]}>
-        <input
-          class="elem-input"
-          maxlength="1"
-          on:keydown={keyDownHandler}
-          bind:value={values[i][j]} />
-      </div>
+  <div class="sudoku">
+    {#each Array(9) as _, i}
+      {#each Array(9) as _, j}
+        <div
+          on:click
+          id={'sudo' + i + j}
+          class={(selectedX === i && selectedY === j ? 'active ' : '') + (errorArr[i][j] === true ? 'error ' : '') + 'sudoku-elem sudo' + i + j + ' sudoBox' + Math.floor((i + 3) / 3) + Math.floor((j + 3) / 3) + ' x' + i + ' y' + j}
+          data-x={i}
+          data-y={j}
+          data-boxX={Math.floor((i + 3) / 3)}
+          data-boxY={Math.floor((j + 3) / 3)}
+          data-value={values[i][j]}>
+          <input
+            class="elem-input"
+            maxlength="1"
+            on:keydown
+            bind:value={values[i][j]} />
+        </div>
+      {/each}
     {/each}
-  {/each}
+  </div>
 </div>

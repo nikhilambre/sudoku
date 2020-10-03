@@ -1,3 +1,12 @@
+*{
+	outline: none;
+	box-sizing: border-box;
+	margin: 0;
+    padding: 0;
+}
+*:focus, *:active{
+	outline: 0.01em solid #f6f6f6;
+}
 html, body {
 	position: relative;
 	width: 100%;
@@ -16,8 +25,8 @@ body {
 -----------------------------------------*/
 @media (prefers-color-scheme: light) {
 	:root{
-		--primary-color: #64b5f6;
-		--secondary-color: #ffb74d;
+		--primary-color: #184059;
+		--secondary-color: #BF7B3F;
 		--contrast-text: #fff;
 
 		--text-primary: rgba(0, 0, 0, 0.87);
@@ -27,8 +36,8 @@ body {
 
 @media (prefers-color-scheme: dark) {
 	:root{
-		--primary-color: #64b5f6;
-		--secondary-color: #ffb74d;
+		--primary-color: #184059;
+		--secondary-color: #BF7B3F;
 
 		--text-primary: #fff;
 		--text-secondary: rgba(255, 255, 255, 0.7);
@@ -51,15 +60,6 @@ body {
 	-ms-flex-direction: column;
 	flex-direction: column
 }
-
-button{
-	cursor: pointer;
-	padding: 0.8em 1.5em;
-    border-radius: 0.3em;
-    border: none;
-    text-transform: uppercase;
-}
-
 
 
 @media only screen and (max-width: 1200px) {

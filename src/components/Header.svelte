@@ -8,7 +8,7 @@
   }
   .logo-title {
     margin: 0;
-    padding: 0.4em;
+    padding: 0.4em 0;
   }
 </style>
 
