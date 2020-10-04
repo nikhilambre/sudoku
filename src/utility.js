@@ -118,7 +118,7 @@ export const updatePossibleValues = (x, y, solvedNumb, possibleValues) => {
             }
         }
     }
-    return possibleValues;
+    return possibleValues[x][y];
 }
 
 export const getOthersPossibleValuesInBox = (x, y, valueArr, possibleValues) => {

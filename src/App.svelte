@@ -48,6 +48,7 @@
   ];
   let selectedX = 0;
   let selectedY = 0;
+  let attempt = 3;
 
   const elementSelectHandler = (e) => {
     selectedX = +e.target.parentNode.getAttribute("data-x");
@@ -96,6 +97,10 @@
       }
     } else {
       sudokuSolved();
+    }
+
+    if (isSudokuNotSolved(values) && attempt > 0) {
+      solveSudoku(attempt--);
     }
     console.log("res3", values, possibleValues);
   };
