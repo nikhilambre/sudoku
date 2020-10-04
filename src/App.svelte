@@ -8,7 +8,8 @@
     getAsciiCode,
     getValidatedKey,
     solveForPossibleValues,
-    solveForUniquePossibleValuesInBox,
+    solveForUniquePossibleValues,
+    sudokuSolved,
     isSudokuNotSolved,
   } from "./utility";
 
@@ -74,11 +75,29 @@
     possibleValues = s1.possibleValues;
 
     if (isSudokuNotSolved(values)) {
-      let s2 = solveForUniquePossibleValuesInBox(values, possibleValues);
+      let s2 = solveForUniquePossibleValues("box", values, possibleValues);
+      values = s2.values;
+      possibleValues = s2.possibleValues;
+
+      if (isSudokuNotSolved(values)) {
+        let s3 = solveForUniquePossibleValues("rowX", values, possibleValues);
+        values = s3.values;
+        possibleValues = s3.possibleValues;
+
+        if (isSudokuNotSolved(values)) {
+          let s4 = solveForUniquePossibleValues("rowY", values, possibleValues);
+          values = s4.values;
+          possibleValues = s4.possibleValues;
+        } else {
+          sudokuSolved();
+        }
+      } else {
+        sudokuSolved();
+      }
     } else {
-      console.log("SUDOKU SOLVED!");
+      sudokuSolved();
     }
-    console.log("res", values, possibleValues);
+    console.log("res3", values, possibleValues);
   };
 </script>
 

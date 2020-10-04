@@ -1,3 +1,7 @@
+export const sudokuSolved = () => {
+    console.log("-----------------SUDOKU SOLVED!--------------------------");
+}
+
 export const isSudokuNotSolved = (valueArr) => {
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
@@ -20,6 +24,7 @@ export const solveForPossibleValues = (valueArr, possibleValues) => {
                 reCheck = true;
                 valueArr[i][j] = possibleValues[i][j][0];
                 possibleValues[i][j] = [];
+                possibleValues[i][j] = [...updatePossibleValues(i, j, possibleValues[i][j][0], possibleValues)];
             }
         }
     }
@@ -42,26 +47,78 @@ export const getPossibleValues = (x, y, valueArr) => {
     return list;
 }
 
-export const solveForUniquePossibleValuesInBox = (valueArr, possibleValues) => {
+export const solveForUniquePossibleValues = (type, valueArr, possibleValues) => {
     let reCheck = false;
 
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
             if (valueArr[i][j] === "") {
-                let othersPossibleValuesArr = getOthersPossibleValuesInBox(i, j, valueArr, possibleValues);
+                let othersPossibleValuesArr = [];
+
+                if (type === "box") {
+                    othersPossibleValuesArr = getOthersPossibleValuesInBox(i, j, valueArr, possibleValues);
+                } else if (type === "rowX") {
+                    othersPossibleValuesArr = getOthersPossibleValuesInRow(i, j, "x", valueArr, possibleValues);
+                } else if (type === "rowY") {
+                    othersPossibleValuesArr = getOthersPossibleValuesInRow(i, j, "y", valueArr, possibleValues);
+                }
+
                 let uniquePossibleValues = possibleValues[i][j].filter(e => othersPossibleValuesArr.indexOf(e) === -1);
+
                 if (uniquePossibleValues.length === 1) {
                     reCheck = true;
                     valueArr[i][j] = uniquePossibleValues[0];
                     possibleValues[i][j] = [];
+                    possibleValues[i][j] = [...updatePossibleValues(i, j, uniquePossibleValues[0], possibleValues)];
                 }
+
+                console.log('uniquePossibleValues', type, possibleValues[i][j], othersPossibleValuesArr, uniquePossibleValues, i, j);
             }
         }
     }
     if (reCheck) {
-        solveForUniquePossibleValuesInBox(valueArr, possibleValues);
+        solveForUniquePossibleValues(type, valueArr, possibleValues);
     }
     return { "possibleValues": possibleValues, "values": valueArr };
+}
+
+export const updatePossibleValues = (x, y, solvedNumb, possibleValues) => {
+    let startX = Math.floor(x / 3) * 3;
+    let startY = Math.floor(y / 3) * 3;
+
+    //  Remove from box
+    for (let i = startX; i < (startX + 3); i++) {
+        for (let j = startY; j < (startY + 3); j++) {
+            if (possibleValues[i][j].length > 0) {
+                for (let m = 0; m < possibleValues[i][j].length; m++) {
+                    if (possibleValues[i][j][m] === solvedNumb) {
+                        possibleValues[i][j].splice(m, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    //  Remove from rows
+    for (let i = 0; i < 9; i++) {
+        if (possibleValues[x][i].length > 0) {
+            for (let m = 0; m < possibleValues[x][i].length; m++) {
+                if (possibleValues[x][i][m] === solvedNumb) {
+                    possibleValues[x][i].splice(m, 1);
+                }
+            }
+        }
+    }
+    for (let i = 0; i < 9; i++) {
+        if (possibleValues[i][y].length > 0) {
+            for (let m = 0; m < possibleValues[i][y].length; m++) {
+                if (possibleValues[i][y][m] === solvedNumb) {
+                    possibleValues[i][y].splice(m, 1);
+                }
+            }
+        }
+    }
+    return possibleValues;
 }
 
 export const getOthersPossibleValuesInBox = (x, y, valueArr, possibleValues) => {
@@ -79,16 +136,29 @@ export const getOthersPossibleValuesInBox = (x, y, valueArr, possibleValues) => 
     return list;
 }
 
-export const isNumberInRows = (numb, xRowNumb, yRowNumb, valueArr) => {
+export const getOthersPossibleValuesInRow = (x, y, type, valueArr, possibleValues) => {
+    let list = [];
     for (let i = 0; i < 9; i++) {
-        if (i === yRowNumb) continue;
-        if (valueArr[xRowNumb][i] === numb) {
+        if (type === "x" && valueArr[x][i] === "" && y !== i) {
+            list = [...new Set([...list, ...possibleValues[x][i]])];
+        }
+        if (type === "y" && valueArr[i][y] === "" && x !== i) {
+            list = [...new Set([...list, ...possibleValues[i][y]])];
+        }
+    }
+    return list;
+}
+
+export const isNumberInRows = (numb, x, y, valueArr) => {
+    for (let i = 0; i < 9; i++) {
+        if (i === y) continue;
+        if (valueArr[x][i] === numb) {
             return true;
         }
     }
     for (let i = 0; i < 9; i++) {
-        if (i === xRowNumb) continue;
-        if (valueArr[i][yRowNumb] === numb) {
+        if (i === x) continue;
+        if (valueArr[i][y] === numb) {
             return true;
         }
     }
