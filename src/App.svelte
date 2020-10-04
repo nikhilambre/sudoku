@@ -8,6 +8,7 @@
     getAsciiCode,
     getValidatedKey,
     solveForPossibleValues,
+    solveForUniquePossibleValuesInBox,
     isSudokuNotSolved,
   } from "./utility";
 
@@ -68,11 +69,12 @@
   };
 
   const solveSudoku = () => {
-    let data = solveForPossibleValues(values, possibleValues);
-    values = data.values;
-    possibleValues = data.possibleValues;
+    let s1 = solveForPossibleValues(values, possibleValues);
+    values = s1.values;
+    possibleValues = s1.possibleValues;
 
     if (isSudokuNotSolved(values)) {
+      let s2 = solveForUniquePossibleValuesInBox(values, possibleValues);
     } else {
       console.log("SUDOKU SOLVED!");
     }

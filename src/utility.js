@@ -42,6 +42,43 @@ export const getPossibleValues = (x, y, valueArr) => {
     return list;
 }
 
+export const solveForUniquePossibleValuesInBox = (valueArr, possibleValues) => {
+    let reCheck = false;
+
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (valueArr[i][j] === "") {
+                let othersPossibleValuesArr = getOthersPossibleValuesInBox(i, j, valueArr, possibleValues);
+                let uniquePossibleValues = possibleValues[i][j].filter(e => othersPossibleValuesArr.indexOf(e) === -1);
+                if (uniquePossibleValues.length === 1) {
+                    reCheck = true;
+                    valueArr[i][j] = uniquePossibleValues[0];
+                    possibleValues[i][j] = [];
+                }
+            }
+        }
+    }
+    if (reCheck) {
+        solveForUniquePossibleValuesInBox(valueArr, possibleValues);
+    }
+    return { "possibleValues": possibleValues, "values": valueArr };
+}
+
+export const getOthersPossibleValuesInBox = (x, y, valueArr, possibleValues) => {
+    let startX = Math.floor(x / 3) * 3;
+    let startY = Math.floor(y / 3) * 3;
+    let list = [];
+
+    for (let i = startX; i < (startX + 3); i++) {
+        for (let j = startY; j < (startY + 3); j++) {
+            if (valueArr[i][j] === "" && !(x === i && y === j)) {
+                list = [...new Set([...list, ...possibleValues[i][j]])];
+            }
+        }
+    }
+    return list;
+}
+
 export const isNumberInRows = (numb, xRowNumb, yRowNumb, valueArr) => {
     for (let i = 0; i < 9; i++) {
         if (i === yRowNumb) continue;
