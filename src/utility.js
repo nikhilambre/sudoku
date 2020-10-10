@@ -71,8 +71,7 @@ export const solveForUniquePossibleValues = (type, valueArr, possibleValues) => 
                     possibleValues[i][j] = [];
                     possibleValues[i][j] = [...updatePossibleValues(i, j, uniquePossibleValues[0], possibleValues)];
                 }
-
-                console.log('uniquePossibleValues', type, possibleValues[i][j], othersPossibleValuesArr, uniquePossibleValues, i, j);
+                // console.log('uniquePossibleValues', type, possibleValues[i][j], othersPossibleValuesArr, uniquePossibleValues, i, j);
             }
         }
     }
@@ -80,6 +79,57 @@ export const solveForUniquePossibleValues = (type, valueArr, possibleValues) => 
         solveForUniquePossibleValues(type, valueArr, possibleValues);
     }
     return { "possibleValues": possibleValues, "values": valueArr };
+}
+
+export const solveForNakedPairs = (valueArr, possibleValues) => {
+    for (let boxX = 0; boxX < 9; boxX + 3) {
+        for (let boxY = 0; boxY < 9; boxY + 3) {
+            let functionString = `
+                (function (a, b){
+                    console.log('test', a, b);
+                })();
+            `;
+            getAdjacentPossibleValueArr(boxX, boxY, possibleValues, functionString);
+        }
+    }
+    return { "possibleValues": possibleValues, "values": valueArr };
+}
+
+export const getAdjacentPossibleValueArr = (x, y, possibleValues, testFunction) => {
+    let startX = Math.floor(x / 3) * 3;
+    let startY = Math.floor(y / 3) * 3;
+
+    for (let i = startX; i < (startX + 3); i++) {
+        for (let j = startY; j < (startY + 3); j++) {
+            if (possibleValues[i][j].length === 0) continue;
+            for (let a = 0; a < 4; a++) {
+                if (a === 0 && ((i - 1) >= startX)) {
+                    if (possibleValues[(i - 1)][j].length !== 0) {
+                        let f = new Function(testFunction);
+                        f(possibleValues[i][j], possibleValues[(i - 1)][j]);
+                    }
+                }
+                if (a === 1 && ((i + 1) <= (startX + 2))) {
+                    if (possibleValues[(i + 1)][j].length !== 0) {
+                        let f = new Function(testFunction);
+                        f(possibleValues[i][j], possibleValues[(i + 1)][j]);
+                    }
+                }
+                if (a === 2 && ((j - 1) >= startY)) {
+                    if (possibleValues[i][(j - 1)].length !== 0) {
+                        let f = new Function(testFunction);
+                        f(possibleValues[i][j], possibleValues[i][(j - 1)]);
+                    }
+                }
+                if (a === 3 && ((j + 1) <= (startY + 2))) {
+                    if (possibleValues[i][(j + 1)].length !== 0) {
+                        let f = new Function(testFunction);
+                        f(possibleValues[i][j], possibleValues[i][(j + 1)]);
+                    }
+                }
+            }
+        }
+    }
 }
 
 export const updatePossibleValues = (x, y, solvedNumb, possibleValues) => {
@@ -240,6 +290,8 @@ export const getValidatedKey = (evt, X, Y, values, errors) => {
             data.x = X + 1;
         }
         data.val = values[data.x][data.y];
+    } else if (isBackSpaceKey(ASCIICode)) {
+        data.err = false;
     } else if (nonNumberKey(ASCIICode)) {
         data.val = 1;
     } else {
@@ -274,6 +326,10 @@ export const isRightArrowKey = (key) => {
 
 export const isDownArrowKey = (key) => {
     return key === 40 ? true : false;
+}
+
+export const isBackSpaceKey = (key) => {
+    return key === 8 ? true : false;
 }
 
 export const nonNumberKey = (key) => {

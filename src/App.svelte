@@ -9,20 +9,21 @@
     getValidatedKey,
     solveForPossibleValues,
     solveForUniquePossibleValues,
+    solveForNakedPairs,
     sudokuSolved,
     isSudokuNotSolved,
   } from "./utility";
 
   let values = [
-    [7, "", 3, "", "", "", "", "", 6],
-    ["", 1, "", "", "", 9, "", "", ""],
-    ["", 9, 6, 1, "", "", "", 3, ""],
-    [5, "", "", "", "", 7, 9, "", 4],
-    ["", "", "", 8, 1, "", 2, "", ""],
-    ["", "", "", 5, "", "", "", "", ""],
-    ["", "", 2, 4, "", "", "", "", 8],
-    ["", "", "", "", "", "", "", "", ""],
-    [3, "", 4, "", "", "", "", 6, ""],
+    ["", "", 8, "", "", 7, "", "", 1],
+    ["", "", "", 9, "", 5, "", "", ""],
+    ["", 1, 7, "", "", 3, 4, "", ""],
+    [3, "", "", 5, "", "", "", 1, ""],
+    ["", "", 5, "", "", 2, "", "", 7],
+    ["", "", 9, "", "", "", "", "", 3],
+    ["", "", 6, "", 7, "", "", 3, ""],
+    [5, 8, "", "", "", "", 6, "", ""],
+    ["", 4, "", 2, "", "", "", "", ""],
   ];
   let possibleValues = [
     [[], [], [], [], [], [], [], [], []],
@@ -89,6 +90,12 @@
           let s4 = solveForUniquePossibleValues("rowY", values, possibleValues);
           values = s4.values;
           possibleValues = s4.possibleValues;
+
+          //   if (isSudokuNotSolved(values)) {
+          //     let s5 = solveForNakedPairs(values, possibleValues);
+          //     values = s5.values;
+          //     possibleValues = s5.possibleValues;
+          //   }
         } else {
           sudokuSolved();
         }
@@ -102,7 +109,6 @@
     if (isSudokuNotSolved(values) && attempt > 0) {
       solveSudoku(attempt--);
     }
-    console.log("res3", values, possibleValues);
   };
 </script>
 
