@@ -12,7 +12,7 @@
 <footer class="footer-wrap">
   <div class="container">
     <div class="footer fx">
-      <p>Made with Svelte.</p>
+      <p>Made with Svelte by Nikhil Ambre.</p>
       <p>All Rights Reserved.</p>
     </div>
   </div>
