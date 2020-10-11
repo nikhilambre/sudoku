@@ -82,61 +82,59 @@ export const solveForUniquePossibleValues = (type, valueArr, possibleValues) => 
 }
 
 export const solveForNakedPairs = (valueArr, possibleValues) => {
-    for (let boxX = 0; boxX < 9; boxX + 3) {
-        for (let boxY = 0; boxY < 9; boxY + 3) {
-            let functionString = `
-                (function (a, b){
-                    console.log('test', a, b);
-                })();
-            `;
-            getAdjacentPossibleValueArr(boxX, boxY, possibleValues, functionString);
+    for (let i = 0; i < 8; i++) {
+        if (i === 2 || i === 5) continue;
+        for (let j = 0; j < 9; j++) {
+            if (possibleValues[i][j].length === 2 &&
+                possibleValues[i + 1][j].length === 2 &&
+                possibleValues[i][j].matchingPair(possibleValues[i + 1][j])) {
+                let pair = [...possibleValues[i][j]];
+                possibleValues = updatePossibleValuesForNakedPair(i, j, 'rowY', [...possibleValues[k][j]], possibleValues);
+
+                possibleValues[i][j] = pair;
+                possibleValues[i + 1][j] = pair;
+            }
+        }
+    }
+    for (let j = 0; j < 8; j++) {
+        if (j === 2 || j === 5) continue;
+        for (let k = 0; k < 9; k++) {
+            if (possibleValues[k][j].length === 2 &&
+                possibleValues[k][j + 1].length === 2 &&
+                possibleValues[k][j].matchingPair(possibleValues[k][j + 1])) {
+
+                let pair = [...possibleValues[k][j]];
+                possibleValues = updatePossibleValuesForNakedPair(k, j, 'rowX', [...possibleValues[k][j]], possibleValues);
+                possibleValues[k][j] = pair;
+                possibleValues[k][j + 1] = pair;
+            }
         }
     }
     return { "possibleValues": possibleValues, "values": valueArr };
 }
 
-export const getAdjacentPossibleValueArr = (x, y, possibleValues, testFunction) => {
-    let startX = Math.floor(x / 3) * 3;
-    let startY = Math.floor(y / 3) * 3;
-
-    for (let i = startX; i < (startX + 3); i++) {
-        for (let j = startY; j < (startY + 3); j++) {
-            if (possibleValues[i][j].length === 0) continue;
-            for (let a = 0; a < 4; a++) {
-                if (a === 0 && ((i - 1) >= startX)) {
-                    if (possibleValues[(i - 1)][j].length !== 0) {
-                        let f = new Function(testFunction);
-                        f(possibleValues[i][j], possibleValues[(i - 1)][j]);
-                    }
-                }
-                if (a === 1 && ((i + 1) <= (startX + 2))) {
-                    if (possibleValues[(i + 1)][j].length !== 0) {
-                        let f = new Function(testFunction);
-                        f(possibleValues[i][j], possibleValues[(i + 1)][j]);
-                    }
-                }
-                if (a === 2 && ((j - 1) >= startY)) {
-                    if (possibleValues[i][(j - 1)].length !== 0) {
-                        let f = new Function(testFunction);
-                        f(possibleValues[i][j], possibleValues[i][(j - 1)]);
-                    }
-                }
-                if (a === 3 && ((j + 1) <= (startY + 2))) {
-                    if (possibleValues[i][(j + 1)].length !== 0) {
-                        let f = new Function(testFunction);
-                        f(possibleValues[i][j], possibleValues[i][(j + 1)]);
-                    }
-                }
-            }
+export const updatePossibleValuesForNakedPair = (x, y, row, pair, possibleValues) => {
+    for (let p = 0; p < pair.length; p++) {
+        let start = getStart(x, y);
+        possibleValues = removeNumberFromBox(start.x, start.y, pair[p], possibleValues);
+        if (row === "rowX") {
+            possibleValues = removeNumberFromRowX(x, y, pair[p], possibleValues);
+        } else if (row === "rowY") {
+            possibleValues = removeNumberFromRowY(x, y, pair[p], possibleValues);
         }
-    }
+    };
+    return possibleValues;
 }
 
 export const updatePossibleValues = (x, y, solvedNumb, possibleValues) => {
-    let startX = Math.floor(x / 3) * 3;
-    let startY = Math.floor(y / 3) * 3;
+    let start = getStart(x, y);
+    possibleValues = removeNumberFromBox(start.x, start.y, solvedNumb, possibleValues);
+    possibleValues = removeNumberFromRowX(x, y, solvedNumb, possibleValues);
+    possibleValues = removeNumberFromRowY(x, y, solvedNumb, possibleValues);
+    return possibleValues[x][y];
+}
 
-    //  Remove from box
+export const removeNumberFromBox = (startX, startY, solvedNumb, possibleValues) => {
     for (let i = startX; i < (startX + 3); i++) {
         for (let j = startY; j < (startY + 3); j++) {
             if (possibleValues[i][j].length > 0) {
@@ -148,8 +146,10 @@ export const updatePossibleValues = (x, y, solvedNumb, possibleValues) => {
             }
         }
     }
+    return possibleValues;
+}
 
-    //  Remove from rows
+export const removeNumberFromRowX = (x, y, solvedNumb, possibleValues) => {
     for (let i = 0; i < 9; i++) {
         if (possibleValues[x][i].length > 0) {
             for (let m = 0; m < possibleValues[x][i].length; m++) {
@@ -159,6 +159,10 @@ export const updatePossibleValues = (x, y, solvedNumb, possibleValues) => {
             }
         }
     }
+    return possibleValues;
+}
+
+export const removeNumberFromRowY = (x, y, solvedNumb, possibleValues) => {
     for (let i = 0; i < 9; i++) {
         if (possibleValues[i][y].length > 0) {
             for (let m = 0; m < possibleValues[i][y].length; m++) {
@@ -168,7 +172,7 @@ export const updatePossibleValues = (x, y, solvedNumb, possibleValues) => {
             }
         }
     }
-    return possibleValues[x][y];
+    return possibleValues;
 }
 
 export const getOthersPossibleValuesInBox = (x, y, valueArr, possibleValues) => {
@@ -338,4 +342,21 @@ export const nonNumberKey = (key) => {
 
 export const getAsciiCode = (evt) => {
     return evt.which ? evt.which : evt.keyCode;
+}
+
+export const getStart = (x, y) => {
+    let startX = Math.floor(x / 3) * 3;
+    let startY = Math.floor(y / 3) * 3;
+    return { "x": startX, "y": startY }
+}
+
+Array.prototype.matchingPair = function (array) {
+    if (!array) return false;
+    if (this.length != array.length) return false;
+
+    let i = 0;
+    if ((this[i] === array[i] && this[i + 1] === array[i + 1]) || (this[i] === array[i + 1] && this[i + 1] === array[i])) {
+        return true;
+    }
+    return false;
 }

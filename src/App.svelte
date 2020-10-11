@@ -15,15 +15,15 @@
   } from "./utility";
 
   let values = [
-    ["", "", 8, "", "", 7, "", "", 1],
-    ["", "", "", 9, "", 5, "", "", ""],
-    ["", 1, 7, "", "", 3, 4, "", ""],
-    [3, "", "", 5, "", "", "", 1, ""],
-    ["", "", 5, "", "", 2, "", "", 7],
-    ["", "", 9, "", "", "", "", "", 3],
-    ["", "", 6, "", 7, "", "", 3, ""],
-    [5, 8, "", "", "", "", 6, "", ""],
-    ["", 4, "", 2, "", "", "", "", ""],
+    ["", "", "", "", "", 7, "", "", 6],
+    ["", "", 6, "", "", "", 8, "", ""],
+    ["", "", 1, 2, "", 5, 4, "", ""],
+    ["", "", "", 1, "", "", "", "", ""],
+    ["", 6, "", "", "", 9, "", "", ""],
+    [5, 3, 8, "", "", "", 2, "", ""],
+    ["", "", "", 4, "", "", "", 6, ""],
+    ["", 5, "", "", 3, 8, "", 9, ""],
+    ["", "", 7, "", "", "", "", "", 2],
   ];
   let possibleValues = [
     [[], [], [], [], [], [], [], [], []],
@@ -49,7 +49,7 @@
   ];
   let selectedX = 0;
   let selectedY = 0;
-  let attempt = 3;
+  let attempt = 0;
 
   const elementSelectHandler = (e) => {
     selectedX = +e.target.parentNode.getAttribute("data-x");
@@ -91,11 +91,13 @@
           values = s4.values;
           possibleValues = s4.possibleValues;
 
-          //   if (isSudokuNotSolved(values)) {
-          //     let s5 = solveForNakedPairs(values, possibleValues);
-          //     values = s5.values;
-          //     possibleValues = s5.possibleValues;
-          //   }
+          if (isSudokuNotSolved(values)) {
+            let s5 = solveForNakedPairs(values, possibleValues);
+            values = s5.values;
+            possibleValues = s5.possibleValues;
+          } else {
+            sudokuSolved();
+          }
         } else {
           sudokuSolved();
         }
@@ -109,6 +111,7 @@
     if (isSudokuNotSolved(values) && attempt > 0) {
       solveSudoku(attempt--);
     }
+    console.log("final", possibleValues);
   };
 </script>
 
