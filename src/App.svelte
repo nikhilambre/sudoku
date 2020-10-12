@@ -10,6 +10,7 @@
     solveForPossibleValues,
     solveForUniquePossibleValues,
     solveForNakedPairs,
+    solveForPointingPair,
     sudokuSolved,
     isSudokuNotSolved,
   } from "./utility";
@@ -95,6 +96,14 @@
             let s5 = solveForNakedPairs(values, possibleValues);
             values = s5.values;
             possibleValues = s5.possibleValues;
+
+            if (isSudokuNotSolved(values)) {
+              let s6 = solveForPointingPair(values, possibleValues);
+              values = s6.values;
+              possibleValues = s6.possibleValues;
+            } else {
+              sudokuSolved();
+            }
           } else {
             sudokuSolved();
           }
@@ -111,7 +120,7 @@
     if (isSudokuNotSolved(values) && attempt > 0) {
       solveSudoku(attempt--);
     }
-    console.log("final", possibleValues);
+    // console.log("final", possibleValues);
   };
 </script>
 
