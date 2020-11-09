@@ -120,7 +120,7 @@
     if (isSudokuNotSolved(values) && attempt > 0) {
       solveSudoku(attempt--);
     }
-    // console.log("final", possibleValues);
+    console.log("final", possibleValues);
   };
 </script>
 
@@ -132,7 +132,8 @@
     {values}
     {errorArr}
     {selectedX}
-    {selectedY} />
+    {selectedY}
+    {possibleValues} />
   <SudokuData on:click={solveSudoku} />
 </Main>
 <Footer />

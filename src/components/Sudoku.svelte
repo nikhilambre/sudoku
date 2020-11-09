@@ -5,6 +5,7 @@
   export let errorArr;
   export let selectedX;
   export let selectedY;
+  export let possibleValues;
 
   onMount(() => {
     document.querySelector("#sudo00 input").focus();
@@ -34,6 +35,7 @@
     text-align: center;
     font-size: 1.6em;
     line-height: 2.5em;
+    position: relative;
   }
   .sudoku-elem.active {
     border: 0.1em solid var(--primary-color);
@@ -71,11 +73,28 @@
     font-size: 1.2em;
     width: 100%;
     height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
     padding: 0;
     line-height: 2.5em;
     text-align: center;
     caret-color: transparent;
     cursor: pointer;
+  }
+  .possible-values {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .possible-values span {
+    font-size: 0.5em;
+    line-height: 1.2em;
+    color: #666;
+    font-weight: 100;
   }
 </style>
 
@@ -92,6 +111,11 @@
           data-boxX={Math.floor((i + 3) / 3)}
           data-boxY={Math.floor((j + 3) / 3)}
           data-value={values[i][j]}>
+          <div class="possible-values">
+            {#each possibleValues[i][j] as x}
+              <span class="val-span">{x}</span>
+            {/each}
+          </div>
           <input
             class="elem-input"
             maxlength="1"
