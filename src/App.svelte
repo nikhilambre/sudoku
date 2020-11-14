@@ -50,7 +50,7 @@
   ];
   let selectedX = 0;
   let selectedY = 0;
-  let attempt = 0;
+  let attempt = 2;
 
   const elementSelectHandler = (e) => {
     selectedX = +e.target.parentNode.getAttribute("data-x");
