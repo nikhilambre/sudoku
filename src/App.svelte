@@ -10,7 +10,7 @@
     solveForPossibleValues,
     solveForUniquePossibleValues,
     solveForNakedPairs,
-    solveForPointingPair,
+    solveForPointOrClaimPair,
     sudokuSolved,
     isSudokuNotSolved,
   } from "./utility";
@@ -98,9 +98,25 @@
             possibleValues = s5.possibleValues;
 
             if (isSudokuNotSolved(values)) {
-              let s6 = solveForPointingPair(values, possibleValues);
+              let s6 = solveForPointOrClaimPair(
+                values,
+                possibleValues,
+                "pointing"
+              );
               values = s6.values;
               possibleValues = s6.possibleValues;
+
+              if (isSudokuNotSolved(values)) {
+                let s7 = solveForPointOrClaimPair(
+                  values,
+                  possibleValues,
+                  "claiming"
+                );
+                values = s7.values;
+                possibleValues = s7.possibleValues;
+              } else {
+                sudokuSolved();
+              }
             } else {
               sudokuSolved();
             }

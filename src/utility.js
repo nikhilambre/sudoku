@@ -58,7 +58,6 @@ export const solveForUniquePossibleValues = (type, valueArr, possibleValues) => 
                     possibleValues[i][j] = [];
                     possibleValues[i][j] = [...updatePossibleValues(i, j, uniquePossibleValues[0], possibleValues)];
                 }
-                // console.log('uniquePossibleValues', type, possibleValues[i][j], othersPossibleValuesArr, uniquePossibleValues, i, j);
             }
         }
     }
@@ -110,24 +109,37 @@ export const solveForNakedPairs = (valueArr, possibleValues) => {
     return { "possibleValues": possibleValues, "values": valueArr };
 }
 
-export const solveForPointingPair = (valueArr, possibleValues) => {
-    // return { "possibleValues": possibleValues, "values": valueArr };
+export const solveForPointOrClaimPair = (valueArr, possibleValues, type) => {
+    // if (type === "claiming") {
+    //     return { "possibleValues": possibleValues, "values": valueArr };
+    // }
 
     for (let i = 0; i < 8; i++) {
         if (i === 2 || i === 5) continue;
         for (let j = 0; j < 9; j++) {
-            if (possibleValues[i][j].length !== 0 && possibleValues[i + 1][j].length !== 0) {
-                let elem = isCandidatePointingInBox(i, j, hasPairCandidate(possibleValues[i][j], possibleValues[i + 1][j]), 'rowY', possibleValues);
-                if (elem) {
-                    let pair1 = [...possibleValues[i][j]];
-                    let pair2 = [...possibleValues[i + 1][j]];
-                    possibleValues = updatePossibleValuesForPointingCandidate(i, j, 'rowY', elem, possibleValues);
-                    possibleValues[i][j] = pair1;
-                    possibleValues[i + 1][j] = pair2;
+            if (possibleValues[i][j].length > 0 && possibleValues[i + 1][j].length > 0) {
+                for (let rep = 0; rep < possibleValues[i][j].length; rep++) {   // Pairing need to be tested for each element
+                    let elem = false;
+                    if (type === "pointing") {
+                        elem = isCandidatePointingInBox(i, j, hasPairCandidate(possibleValues[i][j][rep], possibleValues[i + 1][j]), 'rowY', possibleValues);
+                    } else if (type === "claiming") {
+                        elem = isCandidateClaimInRow(i, j, hasPairCandidate(possibleValues[i][j][rep], possibleValues[i + 1][j]), 'rowY', possibleValues);
+                    }
+                    if (elem) {
+                        let pair1 = [...possibleValues[i][j]];
+                        let pair2 = [...possibleValues[i + 1][j]];
+                        if (type === "pointing") {
+                            possibleValues = updatePossibleValuesForPointingCandidate(i, j, 'rowY', elem, possibleValues);
+                        } else if (type === "claiming") {
+                            possibleValues = updatePossibleValuesForClaimingCandidate(i, j, elem, possibleValues);
+                        }
+                        possibleValues[i][j] = pair1;
+                        possibleValues[i + 1][j] = pair2;
 
-                    let up = updateValueArr([...valueArr], [...possibleValues]);
-                    valueArr = up.valueArr;
-                    possibleValues = up.possibleValues;
+                        let up = updateValueArr([...valueArr], [...possibleValues]);
+                        valueArr = up.valueArr;
+                        possibleValues = up.possibleValues;
+                    }
                 }
             }
         }
@@ -136,17 +148,28 @@ export const solveForPointingPair = (valueArr, possibleValues) => {
         if (j === 2 || j === 5) continue;
         for (let k = 0; k < 9; k++) {
             if (possibleValues[k][j].length > 0 && possibleValues[k][j + 1].length > 0) {
-                let elem = isCandidatePointingInBox(k, j, hasPairCandidate(possibleValues[k][j], possibleValues[k][j + 1]), 'rowX', possibleValues);
-                if (elem) {
-                    let pair1 = [...possibleValues[k][j]];
-                    let pair2 = [...possibleValues[k][j + 1]];
-                    possibleValues = updatePossibleValuesForPointingCandidate(k, j, 'rowX', elem, possibleValues);
-                    possibleValues[k][j] = pair1;
-                    possibleValues[k][j + 1] = pair2;
+                for (let rep = 0; rep < possibleValues[k][j].length; rep++) {
+                    let elem = false;
+                    if (type === "pointing") {
+                        elem = isCandidatePointingInBox(k, j, hasPairCandidate(possibleValues[k][j][rep], possibleValues[k][j + 1]), 'rowX', possibleValues);
+                    } else if (type === "claiming") {
+                        elem = isCandidateClaimInRow(k, j, hasPairCandidate(possibleValues[k][j][rep], possibleValues[k][j + 1]), 'rowX', possibleValues);
+                    }
+                    if (elem) {
+                        let pair1 = [...possibleValues[k][j]];
+                        let pair2 = [...possibleValues[k][j + 1]];
+                        if (type === "pointing") {
+                            possibleValues = updatePossibleValuesForPointingCandidate(k, j, 'rowX', elem, possibleValues);
+                        } else if (type === "claiming") {
+                            possibleValues = updatePossibleValuesForClaimingCandidate(k, j, elem, possibleValues);
+                        }
+                        possibleValues[k][j] = pair1;
+                        possibleValues[k][j + 1] = pair2;
 
-                    let up = updateValueArr([...valueArr], [...possibleValues]);
-                    valueArr = up.valueArr;
-                    possibleValues = up.possibleValues;
+                        let up = updateValueArr([...valueArr], [...possibleValues]);
+                        valueArr = up.valueArr;
+                        possibleValues = up.possibleValues;
+                    }
                 }
             }
         }
@@ -180,14 +203,29 @@ export const updateValueArr = (valueArr, possibleValues) => {
     return { "possibleValues": possibleValues, "valueArr": valueArr }
 }
 
-export const hasPairCandidate = (arr1, arr2) => {
-    for (let iH in arr1) {
-        let ele = arr1[iH];
-        if (arr2.includes(ele)) {
-            return ele;
+export const hasPairCandidate = (element, arr) => {
+    if (arr.includes(element)) return element;
+    else return false;
+}
+
+export const isCandidateClaimInRow = (x, y, candidate, type, possibleValues) => {
+    if (!candidate) return false;
+    let start = getStart(x, y);
+    if (type === "rowX") {
+        for (let iD = 0; iD < 9; iD++) {
+            if (possibleValues[x][iD].length < 1) continue;
+            if (iD >= start.y && iD <= (start.y + 2)) continue;
+            if (possibleValues[x][iD].includes(candidate)) return false;
         }
     }
-    return false;
+    if (type === "rowY") {
+        for (let iD = 0; iD < 9; iD++) {
+            if (possibleValues[iD][y].length < 1) continue;
+            if (iD >= start.x && iD <= (start.x + 2)) continue;
+            if (possibleValues[iD][y].includes(candidate)) return false;
+        }
+    }
+    return candidate;
 }
 
 export const isCandidatePointingInBox = (x, y, candidate, type, possibleValues) => {
@@ -240,6 +278,11 @@ export const updatePossibleValuesForPointingCandidate = (x, y, row, candidate, p
         possibleValues = removeNumberFromRowY(x, y, candidate, possibleValues);
     }
     return possibleValues;
+}
+
+export const updatePossibleValuesForClaimingCandidate = (x, y, candidate, possibleValues) => {
+    let start = getStart(x, y);
+    return removeNumberFromBox(start.x, start.y, candidate, possibleValues);
 }
 
 export const updatePossibleValuesForNakedPair = (x, y, row, pair, possibleValues) => {
